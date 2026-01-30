@@ -1,0 +1,174 @@
+# Estrutura de Backend com Vite + TypeScript
+
+Este documento descreve uma **estrutura recomendada de backend** utilizando **Vite + TypeScript**, pensada para projetos escaláveis, organizados e fáceis de manter.
+
+---
+
+## 🎯 Objetivo da Estrutura
+
+- Separar responsabilidades
+- Facilitar crescimento do projeto
+- Manter regras de negócio desacopladas
+- Permitir testes e manutenção simples
+
+---
+
+## 📁 Estrutura de Pastas Recomendada
+
+```txt
+backend/
+ ├── src/
+ │    ├── modules/
+ │    │    └── example/
+ │    │         ├── example.controller.ts
+ │    │         ├── example.service.ts
+ │    │         ├── example.repository.ts
+ │    │         ├── example.routes.ts
+ │    │         └── example.schema.ts
+ │    ├── shared/
+ │    │    ├── server/
+ │    │    │    ├── app.ts
+ │    │    │    └── server.ts
+ │    │    ├── middlewares/
+ │    │    │    ├── auth.middleware.ts
+ │    │    │    └── error.middleware.ts
+ │    │    ├── errors/
+ │    │    │    └── AppError.ts
+ │    │    └── utils/
+ │    │         └── env.ts
+ │    └── index.ts
+ ├── .env
+ ├── .env.example
+ ├── tsconfig.json
+ ├── vite.config.ts
+ └── package.json
+```
+
+---
+
+## 🧱 Conceito por Camada
+
+### 🔹 Routes
+Responsável apenas por:
+- Definir endpoints
+- Associar middlewares
+- Encaminhar para o controller
+
+> ❌ Nunca colocar regra de negócio aqui
+
+---
+
+### 🔹 Controllers
+Responsável por:
+- Receber request
+- Extrair dados (params, body, query)
+- Retornar response
+
+> ❌ Não acessa banco diretamente
+
+---
+
+### 🔹 Services
+Responsável por:
+- Regras de negócio
+- Validações de fluxo
+- Decisões do sistema
+
+> ✅ Onde fica a lógica principal
+
+---
+
+### 🔹 Repositories
+Responsável por:
+- Comunicação com banco de dados
+- Queries
+- Persistência
+
+> Pode usar Prisma, Supabase ou SQL direto
+
+---
+
+### 🔹 Schemas
+Responsável por:
+- Validação de dados
+- Contratos de entrada
+
+> Normalmente usando Zod
+
+---
+
+## 🌐 Exemplo de Fluxo de Requisição
+
+```txt
+Request → Route → Middleware → Controller → Service → Repository → Banco
+```
+
+---
+
+## ⚙️ Arquivos Principais
+
+### app.ts
+
+- Cria a instância do servidor (Fastify / Express)
+- Registra middlewares globais
+- Registra rotas
+
+---
+
+### server.ts
+
+- Lê variáveis de ambiente
+- Inicia o servidor HTTP
+
+---
+
+## 🔐 Middlewares
+
+- Autenticação JWT
+- Tratamento de erros
+- Logs
+
+---
+
+## ❌ Tratamento de Erros
+
+Criar uma classe base:
+
+- AppError
+- Erros padronizados
+- Resposta consistente para o frontend
+
+---
+
+## 🧪 Testes (opcional)
+
+Estrutura sugerida:
+
+```txt
+src/
+ └── tests/
+      ├── unit/
+      └── integration/
+```
+
+---
+
+## 🚀 Boas Práticas
+
+- Um módulo por domínio
+- Nada de regra de negócio no controller
+- Usar TypeScript estrito
+- Variáveis sensíveis apenas no `.env`
+
+---
+
+## 📌 Observação Final
+
+Essa estrutura funciona muito bem para:
+- APIs REST
+- Backends para React / React Native
+- Sistemas de PDV
+- SaaS
+- Automação
+
+Ela pode ser expandida conforme o projeto cresce.
