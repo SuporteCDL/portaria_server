@@ -1,6 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { entryService } from "./entries.service";
-import { entryCreateSchema, entryDaySchema, EntryLocalSchema, entryLocalSchema, EntryPeriodSchema, entryPeriodSchema, entryUpdateSchema } from "./entries.shcema";
+import { entryService } from "./entries.service.js";
+import { entryCreateSchema, 
+  entryDaySchema, 
+  EntryLocalSchema, 
+  entryLocalSchema, 
+  EntryPeriodSchema, 
+  entryPeriodSchema, 
+  entryUpdateSchema } from "./entries.shcema.js";
 
 interface UpdateEntriesParams {
   id: number

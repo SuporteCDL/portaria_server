@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { departmentService } from "./department.service";
-import { departmentCreateSchema, DepartmentDeleteSchema, departmentUpdateSchema } from "./department..schema";
+import { departmentService } from "./department.service.js";
+import { departmentCreateSchema, DepartmentDeleteSchema, departmentUpdateSchema } from "./department.schema.js";
 
 export async function getDepartments(request: FastifyRequest, reply: FastifyReply) {
   const departments = await departmentService.list()

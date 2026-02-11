@@ -1,4 +1,4 @@
-import { ISigIn, IUser } from '../../utils/interface';
+import { ISigIn, IUser } from '../../utils/interface.js';
 declare function list(): Promise<any[]>;
 export declare function signIn(userBody: ISigIn): Promise<{
     user: any;

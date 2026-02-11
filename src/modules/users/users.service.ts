@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt'
-import { db } from "../../database/knex" 
-import { ISigIn, IUser } from '../../utils/interface';
+import { db } from "../../database/knex.js" 
+import { ISigIn, IUser } from '../../utils/interface.js';
 
 async function list() {
   return await db('usuarios').select('*').orderBy('name')

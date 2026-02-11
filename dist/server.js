@@ -1,29 +1,43 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const fastify_1 = __importDefault(require("fastify"));
-const jwt_1 = __importDefault(require("@fastify/jwt"));
-const env_1 = require("./config/env");
-const routes_1 = require("./app/routes");
-const cors_1 = __importDefault(require("@fastify/cors"));
+import Fastify from 'fastify';
+import jwt from "@fastify/jwt";
+import { env } from './config/env.js';
+import { RegisterRoutes } from './app/routes.js';
+import cors from '@fastify/cors';
+import path from 'path';
+import fastifyStatic from '@fastify/static';
+import { fileURLToPath } from "url";
 const PORT = 5555;
-const app = (0, fastify_1.default)({
+const app = Fastify({
     logger: true
 });
-app.register(jwt_1.default, {
-    secret: env_1.env.JWT_SECRET,
+// 🔹 Necessário para usar __dirname no ESModule
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// 🔹 JWT
+app.register(jwt, {
+    secret: env.JWT_SECRET,
     sign: {
         expiresIn: "1h"
     }
 });
-app.register(cors_1.default, {
-    origin: ['http://localhost:5173', 'http://192.168.2.106:5173'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // <-- importante
+// 🔹 CORS (em produção pode remover)
+app.register(cors, {
+    origin: true
 });
-app.register(routes_1.RegisterRoutes);
-app.listen({ host: '0.0.0.0', port: PORT }).then(() => {
-    console.log(`🚀 API rodando em http://localhost:${PORT}`);
+// 🔹 Rotas da API
+app.register(RegisterRoutes, { prefix: "/api" });
+// 🔥 Servir frontend (build do Vite)
+app.register(fastifyStatic, {
+    root: path.join(__dirname, "../../web/dist"), // ajuste se necessário
+});
+// 🔥 Fallback para SPA (React Router funcionar)
+app.setNotFoundHandler((request, reply) => {
+    if (!request.url.startsWith("/api")) {
+        return reply.sendFile("index.html");
+    }
+    reply.status(404).send({ error: "Not Found" });
+});
+app.listen({ host: "0.0.0.0", port: PORT }).then(() => {
+    console.log(`🚀 Sistema rodando em http://localhost:${PORT}`);
 });
 //# sourceMappingURL=server.js.map

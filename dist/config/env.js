@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.env = void 0;
-require("dotenv/config");
+import "dotenv/config.js";
 function required(name) {
     const value = process.env[name];
     if (!value) {
@@ -9,7 +6,7 @@ function required(name) {
     }
     return value;
 }
-exports.env = {
+export const env = {
     DB_CLIENT: process.env.DB_CLIENT ?? "pg",
     DB_HOST: required("DB_HOST"),
     DB_PORT: Number(required("DB_PORT")),

@@ -8,7 +8,7 @@ import {
   getEntriesByLocal, 
   removeEntry, 
   updateEntry 
-} from "./entries.controller";
+} from "./entries.controller.js";
 
 export const entryRoutes: FastifyPluginAsync = async(app) => {
   app.get('/', getEntries)                                  

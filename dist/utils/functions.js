@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.calcularPermanencia = calcularPermanencia;
-function calcularPermanencia(data, entrada, saida) {
+export function calcularPermanencia(data, entrada, saida) {
     const entradaDate = new Date(`${data}T${entrada}`);
     const saidaDate = new Date(`${data}T${saida}`);
     const diffMs = saidaDate.getTime() - entradaDate.getTime();

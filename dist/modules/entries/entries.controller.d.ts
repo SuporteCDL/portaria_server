@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { EntryLocalSchema, EntryPeriodSchema } from "./entries.shcema";
+import { EntryLocalSchema, EntryPeriodSchema } from "./entries.shcema.js";
 interface UpdateEntriesParams {
     id: number;
 }

@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { signIn, userService } from './users.service' 
-import { userCreateSchema, userSignInSchema } from './users.schema'
+import { signIn, userService } from './users.service.js' 
+import { userCreateSchema, userSignInSchema } from './users.schema.js'
 import { hash } from 'bcrypt'
 import { randomInt } from 'crypto'
 

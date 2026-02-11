@@ -1,5 +1,5 @@
 import knex from 'knex'
-import { env } from '../config/env'
+import { env } from '../config/env.js'
 
 // Exemplo para PostgreSQL
 export const db = knex({

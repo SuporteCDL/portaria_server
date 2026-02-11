@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { DepartmentDeleteSchema } from "./department..schema";
+import { DepartmentDeleteSchema } from "./department.schema.js";
 export declare function getDepartments(request: FastifyRequest, reply: FastifyReply): Promise<never>;
 export declare function createDepartment(request: FastifyRequest, reply: FastifyReply): Promise<never>;
 export declare function updateDepartment(request: FastifyRequest, reply: FastifyReply): Promise<never>;

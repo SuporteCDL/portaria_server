@@ -1,4 +1,4 @@
-import { db } from "../../database/knex"
+import { db } from "../../database/knex.js"
 
 interface IDepartment {
   id: number

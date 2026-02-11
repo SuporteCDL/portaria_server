@@ -1,22 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.entryService = void 0;
-const knex_1 = require("../../database/knex");
-const functions_1 = require("../../utils/functions");
+import { db } from "../../database/knex.js";
+import { calcularPermanencia } from "../../utils/functions.js";
 async function list() {
-    return await (0, knex_1.db)('atendimentos_recepcao').select('*');
+    return await db('atendimentos_recepcao').select('*');
 }
 // pesquisa no cadastro de entradas
 async function listByDay(dayEntry) {
-    return await (0, knex_1.db)('atendimentos_recepcao')
+    return await db('atendimentos_recepcao')
         .where('data', dayEntry)
         .select('*')
         .orderBy('hora_entrada', 'asc');
 }
 // grafico quantidade de atendimentos (barras verticais)
 async function listEntriesAmountDays(atendimento) {
-    const query = (0, knex_1.db)('atendimentos_recepcao')
-        .select(knex_1.db.raw('DATE(data) as data'))
+    const query = db('atendimentos_recepcao')
+        .select(db.raw('DATE(data) as data'))
         .count({ total: 'id' })
         .whereRaw("data >= CURRENT_DATE - INTERVAL '60 days'");
     if (atendimento !== undefined && atendimento !== 'Todos' && atendimento !== '') {
@@ -32,8 +29,8 @@ async function listEntriesAmountDays(atendimento) {
 }
 // grafico atendimentos por local (donut)
 async function listByLocal() {
-    const rows = await (0, knex_1.db)('atendimentos_recepcao')
-        .select(knex_1.db.raw('atendimento'))
+    const rows = await db('atendimentos_recepcao')
+        .select(db.raw('atendimento'))
         .count({ qtde: 'id' })
         .whereRaw("data >= CURRENT_DATE - INTERVAL '60 days'")
         .groupByRaw('atendimento')
@@ -45,7 +42,7 @@ async function listByLocal() {
 }
 // relatório de entradas por periodo
 async function listByPeriod(dayBegin, dayEnd) {
-    return await (0, knex_1.db)('atendimentos_recepcao')
+    return await db('atendimentos_recepcao')
         .whereBetween('data', [dayBegin, dayEnd])
         .select('*')
         .orderBy('hora_entrada', 'asc');
@@ -53,9 +50,9 @@ async function listByPeriod(dayBegin, dayEnd) {
 async function create(entryData) {
     let permanence = 0;
     if (entryData.hora_saida) {
-        permanence = (0, functions_1.calcularPermanencia)(entryData.data.toString(), entryData.hora_entrada.toString(), entryData.hora_saida.toString());
+        permanence = calcularPermanencia(entryData.data.toString(), entryData.hora_entrada.toString(), entryData.hora_saida.toString());
     }
-    const [entrie] = await (0, knex_1.db)('atendimentos_recepcao').insert({
+    const [entrie] = await db('atendimentos_recepcao').insert({
         atendimento: entryData.atendimento,
         qtde_pessoas: entryData.qtde_pessoas,
         data: entryData.data,
@@ -71,7 +68,7 @@ async function create(entryData) {
     return entrie;
 }
 async function update(entryData) {
-    const [entry] = await (0, knex_1.db)('atendimentos_recepcao')
+    const [entry] = await db('atendimentos_recepcao')
         .where({ id: Number(entryData.id) })
         .update({
         atendimento: entryData.atendimento,
@@ -89,12 +86,12 @@ async function update(entryData) {
     return entry;
 }
 async function remove(id) {
-    await (0, knex_1.db)('atendimentos_recepcao')
+    await db('atendimentos_recepcao')
         .where({ id: id })
         .delete();
     return;
 }
-exports.entryService = {
+export const entryService = {
     list,
     listEntriesAmountDays,
     listByPeriod,

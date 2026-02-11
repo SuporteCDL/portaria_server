@@ -3,7 +3,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "target": "ES2022",
-    "module": "CommonJS",
+    "module": "es2022",
     "moduleResolution": "node",
     "strict": true,
     "sourceMap": true,

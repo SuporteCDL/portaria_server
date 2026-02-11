@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.departmentService = void 0;
-const knex_1 = require("../../database/knex");
+import { db } from "../../database/knex.js";
 async function list() {
-    return await (0, knex_1.db)('departamentos').select('*').orderBy('descricao');
+    return await db('departamentos').select('*').orderBy('descricao');
 }
 async function create(deptoData) {
-    const [department] = await (0, knex_1.db)('departamentos')
+    const [department] = await db('departamentos')
         .insert({
         descricao: deptoData.descricao
     })
@@ -14,7 +11,7 @@ async function create(deptoData) {
     return department;
 }
 async function update(deptoData) {
-    const [department] = await (0, knex_1.db)('departamentos')
+    const [department] = await db('departamentos')
         .where({ id: deptoData.id })
         .update({
         descricao: deptoData.descricao
@@ -23,10 +20,10 @@ async function update(deptoData) {
     return department;
 }
 async function remove(id) {
-    await (0, knex_1.db)('departamentos')
+    await db('departamentos')
         .where({ id: id })
         .delete();
     return;
 }
-exports.departmentService = { list, create, update, remove };
+export const departmentService = { list, create, update, remove };
 //# sourceMappingURL=department.service.js.map

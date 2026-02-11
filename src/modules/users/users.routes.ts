@@ -5,8 +5,8 @@ import {
   updateUser,
   removeUser,
   signInUser
-} from "./users.controller"
-import { authenticate } from "../../middlewares/authenticate"
+} from "./users.controller.js"
+import { authenticate } from "../../middlewares/authenticate.js"
 
 interface UpdateUsuarioParam {
   id: number

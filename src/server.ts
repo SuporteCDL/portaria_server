@@ -1,8 +1,11 @@
 import Fastify from 'fastify'
 import jwt from "@fastify/jwt"
-import { env } from './config/env'
-import { RegisterRoutes } from './app/routes' 
+import { env } from './config/env.js'
+import { RegisterRoutes } from './app/routes.js' 
 import cors from '@fastify/cors'
+import path from 'path'
+import fastifyStatic from '@fastify/static'
+import { fileURLToPath } from "url"
 
 const PORT=5555
 
@@ -10,6 +13,11 @@ const app = Fastify({
   logger: true
 })
 
+// 🔹 Necessário para usar __dirname no ESModule
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// 🔹 JWT
 app.register(jwt, {
   secret: env.JWT_SECRET,
   sign: {
@@ -17,15 +25,28 @@ app.register(jwt, {
   }
 })
 
+// 🔹 CORS (em produção pode remover)
 app.register(cors, {
-  origin: ['http://localhost:5173', 'http://192.168.2.106:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // <-- importante
+  origin: true
 })
 
-app.register(RegisterRoutes)
+// 🔹 Rotas da API
+app.register(RegisterRoutes, { prefix: "/api" })
 
-app.listen({ host: '0.0.0.0', port: PORT }).then(() => {
-  console.log(`🚀 API rodando em http://localhost:${PORT}`)
+// 🔥 Servir frontend (build do Vite)
+app.register(fastifyStatic, {
+  root: path.join(__dirname, "../../web/dist"), // ajuste se necessário
 })
 
+// 🔥 Fallback para SPA (React Router funcionar)
+app.setNotFoundHandler((request, reply) => {
+  if (!request.url.startsWith("/api")) {
+    return reply.sendFile("index.html")
+  }
+  reply.status(404).send({ error: "Not Found" })
+})
+
+app.listen({ host: "0.0.0.0", port: PORT }).then(() => {
+  console.log(`🚀 Sistema rodando em http://localhost:${PORT}`)
+})
 

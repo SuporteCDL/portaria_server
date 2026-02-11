@@ -1,5 +1,5 @@
-import { db } from "../../database/knex";
-import { calcularPermanencia } from "../../utils/functions";
+import { db } from "../../database/knex.js";
+import { calcularPermanencia } from "../../utils/functions.js";
 
 interface IEntry {
   id: number;

@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "dotenv/config.js";
 export declare const env: {
     DB_CLIENT: string;
     DB_HOST: string;
