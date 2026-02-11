@@ -4,7 +4,7 @@ import { env } from './config/env'
 import { RegisterRoutes } from './app/routes' 
 import cors from '@fastify/cors'
 
-const PORT = Number(process.env.PORT) || 5555
+const PORT=5555
 
 const app = Fastify({
   logger: true
@@ -24,7 +24,7 @@ app.register(cors, {
 
 app.register(RegisterRoutes)
 
-app.listen({ host: '0.0.0.0', port: 5555 }).then(() => {
+app.listen({ host: '0.0.0.0', port: PORT }).then(() => {
   console.log(`🚀 API rodando em http://localhost:${PORT}`)
 })
 
