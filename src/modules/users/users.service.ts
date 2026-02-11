@@ -1,18 +1,6 @@
 import { compare } from 'bcrypt'
-import jwt from 'jsonwebtoken';
 import { db } from "../../database/knex" 
-
-interface ISigIn {
-  email: string
-  password: string
-}
-
-interface IUser {
-  id: number
-  name: string
-  email: string
-  password: string
-}
+import { ISigIn, IUser } from '../../utils/interface';
 
 async function list() {
   return await db('usuarios').select('*').orderBy('name')
@@ -24,23 +12,17 @@ export async function signIn(userBody: ISigIn) {
     .where({ email: userBody.email })
     .first();
 
-  if (!userDB) {
-    return null; // Usuário não encontrado
+    if (!userDB) {
+    return null;
   }
+
   const correctPassword = await compare(userBody.password, userDB.password);
   if (!correctPassword) {
-    return null; // Senha incorreta
+    return null;
   }
   const { password, ...dadosSemSenha } = userDB;
 
-  const token = jwt.sign(
-    { id: userDB.id, email: userDB.email },
-    process.env.JWT_SECRET || 'segredo_dev',
-    { expiresIn: '1h' }
-  );
-
-  return { user: dadosSemSenha, token };
-  // return dadosSemSenha;
+  return { user: dadosSemSenha };
 }
 
 async function create(dados: Omit<IUser, 'id'>) {
@@ -49,6 +31,7 @@ async function create(dados: Omit<IUser, 'id'>) {
       name: dados.name,
       email: dados.email,
       password: dados.password,
+      role: dados.role
     })
     .returning('*')
   return usuario
@@ -60,6 +43,7 @@ async function update(dados: IUser) {
     .update({
       name: dados.name,
       email: dados.email,
+      role: dados.role
     })
     .returning('*')
 

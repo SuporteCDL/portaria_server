@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { entryService } from "./entries.service";
-import { entryCreateSchema, entryDaySchema, entryUpdateSchema } from "./entries.shcema";
+import { entryCreateSchema, entryDaySchema, EntryLocalSchema, entryLocalSchema, EntryPeriodSchema, entryPeriodSchema, entryUpdateSchema } from "./entries.shcema";
 
 interface UpdateEntriesParams {
   id: number
@@ -15,19 +15,26 @@ export async function getEntries(request: FastifyRequest, reply: FastifyReply) {
   return reply.send(entries)
 }
 
-export async function getEntriesByDay(request: FastifyRequest, reply: FastifyReply) {
-  const { dayEntry } = entryDaySchema.parse(request.params)
+export async function getEntriesByDay(request: FastifyRequest<{ Params: DayEntryParams }>, reply: FastifyReply) {
+    const { dayEntry } = entryDaySchema.parse(request.params)
   const entries = await entryService.listByDay(dayEntry)
   return reply.send(entries)
 }
 
-export async function getEntriesGroup10Days(request: FastifyRequest, reply: FastifyReply) {
-  const entries = await entryService.listGroup10Days()
+export async function getEntriesByPeriod(request: FastifyRequest<{ Querystring: EntryPeriodSchema }>, reply: FastifyReply) {
+  const { dayEntryBegin, dayEntryEnd } = entryPeriodSchema.parse(request.query)
+  const entries = await entryService.listByPeriod(dayEntryBegin, dayEntryEnd)
+  return entries
+}
+
+export async function getEntriesAmountDays(request: FastifyRequest<{ Querystring: EntryLocalSchema }>, reply: FastifyReply) {
+  const { atendimento } = entryLocalSchema.parse(request.query)
+  const entries = await entryService.listEntriesAmountDays(atendimento)
   return reply.send(entries)
 }
 
-export async function getEntriesGroupByDay(request: FastifyRequest, reply: FastifyReply) {
-  const entries = await entryService.listGroupByDay()
+export async function getEntriesByLocal(request: FastifyRequest, reply: FastifyReply) {
+  const entries = await entryService.listByLocal()
   return reply.send(entries)
 }
 

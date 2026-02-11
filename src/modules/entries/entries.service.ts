@@ -12,6 +12,7 @@ interface IEntry {
   observacao?: string | undefined
   nome?: string | undefined
   servico?: string | undefined
+  usuario?: string | undefined
 }
 interface IGroupByDay {
   data: Date;
@@ -22,7 +23,7 @@ async function list() {
   return await db('atendimentos_recepcao').select('*')
 }
 
-// listar atendimentos por data
+// pesquisa no cadastro de entradas
 async function listByDay(dayEntry: string) {
   return await db('atendimentos_recepcao')
   .where('data', dayEntry)
@@ -30,25 +31,45 @@ async function listByDay(dayEntry: string) {
   .orderBy('hora_entrada', 'asc')
 }
 
-// listar atendimentos dos últimos 10 dias
-async function listGroup10Days() {
-  const rows = await db('atendimentos_recepcao')
-  .select('data', 'atendimento')
-  .sum({ total: 'qtde_pessoas' })
-  .where('data', '>=', db.raw(`CURRENT_DATE - INTERVAL '10 days'`))
-  .groupBy('data', 'atendimento')
-  .orderBy('data')
-  return rows
+// grafico quantidade de atendimentos (barras verticais)
+async function listEntriesAmountDays(atendimento?: string) {
+  const query = db('atendimentos_recepcao')
+    .select(db.raw('DATE(data) as data'))
+    .count({ total: 'id' })
+    .whereRaw("data >= CURRENT_DATE - INTERVAL '60 days'")
+  if (atendimento !== undefined && atendimento !== 'Todos' && atendimento !== '') {
+    query.andWhere('atendimento', atendimento)
+  }
+  const rows = await query
+    .groupByRaw('DATE(data)')
+    .orderByRaw('DATE(data) ASC')
+  return rows.map((row: any) => ({
+    data: row.data,
+    total: Number(row.total),
+  }))
 }
 
-// quantidade de atendimentos por dia
-async function listGroupByDay() {
+// grafico atendimentos por local (donut)
+async function listByLocal() {
   const rows = await db('atendimentos_recepcao')
-  .select('data')
-  .count({ total: 'id'})
-  .groupBy('data')
-  .orderBy('data')
-  return rows
+    .select(db.raw('atendimento'))
+    .count({ qtde: 'id' })
+    .whereRaw("data >= CURRENT_DATE - INTERVAL '60 days'")
+    .groupByRaw('atendimento')
+    .orderByRaw('atendimento ASC')
+
+  return rows.map((row: any) => ({
+    atendimento: row.atendimento,
+    qtde: Number(row.qtde),
+  }))
+}
+
+// relatório de entradas por periodo
+async function listByPeriod(dayBegin: string, dayEnd: string) {
+  return await db('atendimentos_recepcao')
+  .whereBetween('data', [dayBegin, dayEnd])
+  .select('*')
+  .orderBy('hora_entrada', 'asc')
 }
 
 async function create(entryData: Omit<IEntry, 'id'>) {
@@ -70,6 +91,7 @@ async function create(entryData: Omit<IEntry, 'id'>) {
     observacao: entryData.observacao,
     nome: entryData.nome,
     servico: entryData.servico,
+    usuario: entryData.usuario
   })
   .returning('*')
   return entrie
@@ -87,7 +109,8 @@ async function update(entryData: IEntry) {
     permanencia: entryData.permanencia,
     observacao: entryData.observacao,
     nome: entryData.nome,
-    servico: entryData.servico
+    servico: entryData.servico,
+    usuario: entryData.usuario
   })
   .returning('*')
   return entry
@@ -100,4 +123,13 @@ async function remove(id: number) {
   return 
 }
 
-export const entryService = { list, listGroup10Days, listGroupByDay, listByDay, create, update, remove }
+export const entryService = { 
+  list, 
+  listEntriesAmountDays, 
+  listByPeriod, 
+  listByLocal, 
+  listByDay, 
+  create, 
+  update, 
+  remove 
+}

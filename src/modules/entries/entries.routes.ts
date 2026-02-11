@@ -2,19 +2,21 @@ import { FastifyPluginAsync } from "fastify";
 import { 
   createEntry, 
   getEntries, 
-  getEntriesByDay, 
-  getEntriesGroup10Days, 
-  getEntriesGroupByDay, 
+  getEntriesByDay,
+  getEntriesByPeriod, 
+  getEntriesAmountDays, 
+  getEntriesByLocal, 
   removeEntry, 
   updateEntry 
 } from "./entries.controller";
 
 export const entryRoutes: FastifyPluginAsync = async(app) => {
-  app.get('/', getEntries)
+  app.get('/', getEntries)                                  
+  app.get('/:dayEntry', getEntriesByDay)                    //pesquisa no cadastro de entradas
+  app.get('/entriesamountdays', getEntriesAmountDays)       //grafico quantidade de atendimentos (barras verticais)
+  app.get('/entriesbylocal', getEntriesByLocal)             //grafico atendimentos por local (donut)
+  app.get('/entriesbyperiod', getEntriesByPeriod)           //relatório de entradas por periodo
   app.post('/', createEntry)
   app.put('/', updateEntry)
   app.delete('/:id', removeEntry)
-  app.get('/entries10Days', getEntriesGroup10Days)
-  app.get('/entriesgroupbyday', getEntriesGroupByDay)
-  app.get('/:dayEntry', getEntriesByDay)
 }

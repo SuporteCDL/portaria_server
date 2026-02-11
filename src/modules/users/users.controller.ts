@@ -4,6 +4,11 @@ import { userCreateSchema, userSignInSchema } from './users.schema'
 import { hash } from 'bcrypt'
 import { randomInt } from 'crypto'
 
+interface ISigIn {
+  email: string
+  password: string
+}
+
 interface UpdateUsuarioParam {
   id: number
 }
@@ -13,19 +18,33 @@ export async function getUsers(request: FastifyRequest, reply: FastifyReply) {
   return reply.send(users)
 }
 
-export async function signInUser(request: FastifyRequest, reply: FastifyReply) {
-  try {
-    const user = await signIn(userSignInSchema.parse(request.body))
-    
-    if (!user) {
-      return reply.status(401).send({ message: 'Email ou senha incorretos' });
-    }
+export async function signInUser(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { email, password } = request.body as ISigIn
 
-    return reply.send({ message: 'Login realizado com sucesso', user });
-  } catch (error) {
-    console.error(error);
-    return reply.status(500).send({ message: 'Erro interno no servidor' });
+  const result = await signIn({ email, password })
+
+  if (!result) {
+    return reply.status(401).send({
+      message: "Email ou senha inválidos"
+    })
   }
+
+  const { user } = result
+
+  const token = await reply.jwtSign(
+    {
+      sub: String(user.id),
+      role: user.role
+    }
+  )
+
+  return reply.send({
+    token,
+    user
+  })
 }
 
 export async function createUser(request: FastifyRequest, reply: FastifyReply) {
@@ -41,7 +60,8 @@ export async function createUser(request: FastifyRequest, reply: FastifyReply) {
   const userData = {
     name: parsed.data.name,
     email: parsed.data.email,
-    password: passwordHash
+    password: passwordHash,
+    role: String(parsed.data.role)
   }
   const newUser = await userService.create(userData)
   return reply.code(201).send(newUser)
@@ -57,7 +77,7 @@ export async function updateUser(request: FastifyRequest<{ Params: UpdateUsuario
     })
   }
   const userUpdated = await userService.update({
-    id: Number(id),
+    id: id,
     ...parsed.data
   })
   return reply.code(201).send(userUpdated)
