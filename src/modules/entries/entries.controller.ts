@@ -44,6 +44,11 @@ export async function getEntriesByLocal(request: FastifyRequest, reply: FastifyR
   return reply.send(entries)
 }
 
+export async function getEntriesByUser(request: FastifyRequest, reply: FastifyReply) {
+  const entries = await entryService.listByUser()
+  return reply.send(entries)
+}
+
 export async function createEntry(request: FastifyRequest, reply: FastifyReply) {
   const parsed = entryCreateSchema.safeParse(request.body)
   if(!parsed.success) {

@@ -23,6 +23,10 @@ export async function getEntriesByLocal(request, reply) {
     const entries = await entryService.listByLocal();
     return reply.send(entries);
 }
+export async function getEntriesByUser(request, reply) {
+    const entries = await entryService.listByUser();
+    return reply.send(entries);
+}
 export async function createEntry(request, reply) {
     const parsed = entryCreateSchema.safeParse(request.body);
     if (!parsed.success) {

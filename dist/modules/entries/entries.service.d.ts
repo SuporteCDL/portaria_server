@@ -21,6 +21,10 @@ declare function listByLocal(): Promise<{
     atendimento: any;
     qtde: number;
 }[]>;
+declare function listByUser(): Promise<{
+    usuario: any;
+    qtde: number;
+}[]>;
 declare function listByPeriod(dayBegin: string, dayEnd: string): Promise<any[]>;
 declare function create(entryData: Omit<IEntry, 'id'>): Promise<any>;
 declare function update(entryData: IEntry): Promise<any>;
@@ -30,6 +34,7 @@ export declare const entryService: {
     listEntriesAmountDays: typeof listEntriesAmountDays;
     listByPeriod: typeof listByPeriod;
     listByLocal: typeof listByLocal;
+    listByUser: typeof listByUser;
     listByDay: typeof listByDay;
     create: typeof create;
     update: typeof update;

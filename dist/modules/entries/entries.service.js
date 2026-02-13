@@ -40,6 +40,19 @@ async function listByLocal() {
         qtde: Number(row.qtde),
     }));
 }
+// grafico atendimentos por usuario (barras horizontais)
+async function listByUser() {
+    const rows = await db('atendimentos_recepcao')
+        .select(db.raw('usuario'))
+        .count({ qtde: 'id' })
+        .whereRaw("data >= CURRENT_DATE - INTERVAL '60 days'")
+        .groupByRaw('usuario')
+        .orderByRaw('usuario ASC');
+    return rows.map((row) => ({
+        usuario: row.usuario,
+        qtde: Number(row.qtde),
+    }));
+}
 // relatório de entradas por periodo
 async function listByPeriod(dayBegin, dayEnd) {
     return await db('atendimentos_recepcao')
@@ -96,6 +109,7 @@ export const entryService = {
     listEntriesAmountDays,
     listByPeriod,
     listByLocal,
+    listByUser,
     listByDay,
     create,
     update,

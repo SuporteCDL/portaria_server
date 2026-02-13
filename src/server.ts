@@ -7,7 +7,7 @@ import path from 'path'
 import fastifyStatic from '@fastify/static'
 import { fileURLToPath } from "url"
 
-const PORT=5555
+const PORT=5050
 
 const app = Fastify({
   logger: true
@@ -46,7 +46,33 @@ app.setNotFoundHandler((request, reply) => {
   reply.status(404).send({ error: "Not Found" })
 })
 
+app.post("/api/refresh", async (request, reply) => {
+  try {
+    const { refreshToken } = request.body as { refreshToken: string }
+
+    if (!refreshToken) {
+      return reply.status(401).send({ error: "Refresh token não enviado" })
+    }
+
+    // 🔐 Verifica refresh token
+    const payload = app.jwt.verify(refreshToken)
+
+    // 🔥 Gera novo access token
+    const newAccessToken = app.jwt.sign(
+      {
+        sub: (payload as any).sub,
+        role: (payload as any).role
+      },
+      { expiresIn: "1h" }
+    )
+
+    return reply.send({ accessToken: newAccessToken })
+  } catch (err) {
+    return reply.status(401).send({ error: "Refresh token inválido" })
+  }
+})
+
 app.listen({ host: "0.0.0.0", port: PORT }).then(() => {
-  console.log(`🚀 Sistema rodando em http://localhost:${PORT}`)
+  console.log(`🚀 Sistema rodando na porta ${PORT}`)
 })
 

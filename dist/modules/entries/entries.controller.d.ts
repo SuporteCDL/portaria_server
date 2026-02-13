@@ -17,6 +17,7 @@ export declare function getEntriesAmountDays(request: FastifyRequest<{
     Querystring: EntryLocalSchema;
 }>, reply: FastifyReply): Promise<never>;
 export declare function getEntriesByLocal(request: FastifyRequest, reply: FastifyReply): Promise<never>;
+export declare function getEntriesByUser(request: FastifyRequest, reply: FastifyReply): Promise<never>;
 export declare function createEntry(request: FastifyRequest, reply: FastifyReply): Promise<never>;
 export declare function updateEntry(request: FastifyRequest<{
     Params: UpdateEntriesParams;
