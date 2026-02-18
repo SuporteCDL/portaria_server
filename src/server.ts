@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename)
 app.register(jwt, {
   secret: env.JWT_SECRET,
   sign: {
-    expiresIn: "1h"
+    expiresIn: "7d"
   }
 })
 
@@ -40,7 +40,7 @@ app.register(fastifyStatic, {
 
 // 🔥 Fallback para SPA (React Router funcionar)
 app.setNotFoundHandler((request, reply) => {
-  if (!request.url.startsWith("/api")) {
+  if (!request.url.startsWith("http://192.168.2.106:5050/api")) {
     return reply.sendFile("index.html")
   }
   reply.status(404).send({ error: "Not Found" })
@@ -63,7 +63,7 @@ app.post("/api/refresh", async (request, reply) => {
         sub: (payload as any).sub,
         role: (payload as any).role
       },
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     )
 
     return reply.send({ accessToken: newAccessToken })
