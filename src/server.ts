@@ -1,4 +1,4 @@
-import Fastify from 'fastify'
+import Fastify, { FastifyReply, FastifyRequest } from 'fastify'
 import jwt from "@fastify/jwt"
 import { env } from './config/env.js'
 import { RegisterRoutes } from './app/routes.js' 
@@ -27,7 +27,8 @@ app.register(jwt, {
 
 // 🔹 CORS (em produção pode remover)
 app.register(cors, {
-  origin: true
+  origin: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 })
 
 // 🔹 Rotas da API
@@ -39,14 +40,14 @@ app.register(fastifyStatic, {
 })
 
 // 🔥 Fallback para SPA (React Router funcionar)
-app.setNotFoundHandler((request, reply) => {
+app.setNotFoundHandler((request:FastifyRequest, reply:FastifyReply) => {
   if (!request.url.startsWith("http://192.168.2.106:5050/api")) {
     return reply.sendFile("index.html")
   }
   reply.status(404).send({ error: "Not Found" })
 })
 
-app.post("/api/refresh", async (request, reply) => {
+app.post("/api/refresh", async (request:FastifyRequest, reply:FastifyReply) => {
   try {
     const { refreshToken } = request.body as { refreshToken: string }
 

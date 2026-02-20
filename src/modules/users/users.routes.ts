@@ -4,23 +4,24 @@ import {
   createUser,
   updateUser,
   removeUser,
-  signInUser
+  signInUser,
+  updatePasswordUser
 } from "./users.controller.js"
 import { authenticate } from "../../middlewares/authenticate.js"
 
-interface UpdateUsuarioParam {
+interface IdUsuarioParam {
   id: number
 }
 
 export async function userRoutes(app: FastifyInstance) {
   app.post('/signin', signInUser)
-
   app.get('/', {preHandler: authenticate}, getUsers)
   app.post('/', {preHandler: authenticate}, createUser)
-  app.put<{
-  Params: UpdateUsuarioParam
-}>('/:id', {preHandler: authenticate}, updateUser)
+  app.patch<{ 
+    Params: IdUsuarioParam 
+  }>('/:id/password', {preHandler: authenticate}, updatePasswordUser)
+  app.put('/', {preHandler: authenticate}, updateUser)
   app.delete<{
-  Params: UpdateUsuarioParam
+  Params: IdUsuarioParam
 }>('/:id', {preHandler: authenticate}, removeUser)
 }

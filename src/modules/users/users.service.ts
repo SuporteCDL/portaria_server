@@ -1,4 +1,6 @@
 import { compare } from 'bcrypt'
+import { hash } from 'bcrypt'
+import { randomInt } from 'crypto'
 import { db } from "../../database/knex.js" 
 import { ISigIn, IUser } from '../../utils/interface.js';
 
@@ -37,7 +39,30 @@ async function create(dados: Omit<IUser, 'id'>) {
   return usuario
 }
 
-async function update(dados: IUser) {
+async function updatePassword(
+  id: number,
+  currentPassword: string,
+  newPassword: string
+) {
+  const userDB = await db('usuarios')
+    .where({ id })
+    .first()
+
+  if (!userDB) return null
+
+  const correctPassword = await compare(currentPassword, userDB.password)
+  if (!correctPassword) return null
+
+  const newHash = await hash(newPassword, 10)
+
+  await db('usuarios')
+    .where({ id })
+    .update({ password: newHash })
+
+  return true
+}
+
+async function update(dados: Omit<IUser, 'password'>) {
   const [user] = await db('usuarios')
     .where({ id: Number(dados.id) })
     .update({
@@ -59,4 +84,4 @@ async function remove(id: Number) {
   return usuario
 }
 
-export const userService = { list, signIn, create, update, remove }
+export const userService = { list, signIn, create, updatePassword, update, remove }

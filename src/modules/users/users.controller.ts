@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { signIn, userService } from './users.service.js' 
-import { userCreateSchema, userSignInSchema } from './users.schema.js'
+import { userCreateSchema, updatePasswordSchema, userUpdateSchema } from './users.schema.js'
 import { hash } from 'bcrypt'
 import { randomInt } from 'crypto'
 
@@ -67,23 +67,42 @@ export async function createUser(request: FastifyRequest, reply: FastifyReply) {
   return reply.code(201).send(newUser)
 }
 
-export async function updateUser(request: FastifyRequest<{ Params: UpdateUsuarioParam }>, reply: FastifyReply) {
+export async function updatePasswordUser(
+  request: FastifyRequest<{ Params: UpdateUsuarioParam }>,
+  reply: FastifyReply
+) {
   const { id } = request.params
-  const parsed = userCreateSchema.safeParse(request.body)
+  const parsed = updatePasswordSchema.safeParse(request.body)
+  if (!parsed.success) {
+    return reply.status(400).send(parsed.error.format)
+  }
+  const { currentPassword, newPassword } = parsed.data
+  const updated = await userService.updatePassword(
+    id,
+    currentPassword,
+    newPassword
+  )
+  if (updated === null) {
+    return reply.code(202).send('Senha atual incorreta')
+  }
+  return reply.code(200).send('Senha alterada com sucesso')
+}
+
+export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
+  const parsed = userUpdateSchema.safeParse(request.body)
   if (!parsed.success) {
     return reply.status(400).send({
       error: 'Erro de validação',
-      details: parsed.error.format(),
+      details: parsed.error.format,
     })
   }
-  const userUpdated = await userService.update({
-    id: id,
-    ...parsed.data
-  })
+  const userUpdated = await userService.update(parsed.data)
   return reply.code(201).send(userUpdated)
 }
 
-export async function removeUser(request: FastifyRequest<{ Params: UpdateUsuarioParam }>, reply: FastifyReply) {
+export async function removeUser(
+  request: FastifyRequest<{ Params: UpdateUsuarioParam }>, 
+  reply: FastifyReply) {
   const { id } = request.params
   if (!id) {
     return reply.status(400).send({
