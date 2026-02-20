@@ -1,6 +1,5 @@
-# Estrutura de Backend com Vite + TypeScript
-
-Este documento descreve uma **estrutura recomendada de backend** utilizando **Vite + TypeScript**, pensada para projetos escaláveis, organizados e fáceis de manter.
+# Estrutura de Backend com Fastify + Typescript
+Este documento descreve uma **estrutura recomendada de backend** utilizando **Fastify + TypeScript**, pensada para projetos escaláveis, organizados e fáceis de manter.
 
 ---
 
@@ -16,31 +15,31 @@ Este documento descreve uma **estrutura recomendada de backend** utilizando **Vi
 ## 📁 Estrutura de Pastas Recomendada
 
 ```txt
-backend/
+server/
  ├── src/
+ │    ├── app/
+ │    │    └── routes.ts
+ │    ├── config/
+ │    │    └── env.ts
+ │    ├── database/
+ │    │    └── knex.ts
+ │    ├── middlewares/
+ │    │    └── autenticate.ts
  │    ├── modules/
- │    │    └── example/
- │    │         ├── example.controller.ts
- │    │         ├── example.service.ts
- │    │         ├── example.repository.ts
- │    │         ├── example.routes.ts
- │    │         └── example.schema.ts
- │    ├── shared/
- │    │    ├── server/
- │    │    │    ├── app.ts
- │    │    │    └── server.ts
- │    │    ├── middlewares/
- │    │    │    ├── auth.middleware.ts
- │    │    │    └── error.middleware.ts
- │    │    ├── errors/
- │    │    │    └── AppError.ts
- │    │    └── utils/
- │    │         └── env.ts
- │    └── index.ts
+ │    │    ├── departments/
+ │    │    ├── entries/
+ │    │    └── users/
+ │    ├── types/
+ │    │    ├── fastify-jwt.d.ts
+ │    │    └── fastify.d.ts
+ │    ├── utils/
+ │    │    ├── functions.ts
+ │    │    └── interface.ts
+ │    └── server.ts
  ├── .env
  ├── .env.example
+ ├── .gitignore
  ├── tsconfig.json
- ├── vite.config.ts
  └── package.json
 ```
 
